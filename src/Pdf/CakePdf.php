@@ -6,7 +6,7 @@ use Cake\Core\App;
 use Cake\Core\Configure;
 use Cake\Core\Exception\Exception;
 use Cake\Filesystem\File;
-use Cake\Http\ServerRequestFactory;
+use Cake\Network\Request;;
 
 class CakePdf
 {
@@ -367,7 +367,7 @@ class CakePdf
             throw new Exception(__d('cake_pdf', 'Pdf engines must extend "AbstractPdfEngine"'));
         }
         $this->_engineClass = new $engineClassName($this);
-        $this->_engineClass->setConfig($config);
+        $this->_engineClass->config($config);
 
         return $this->_engineClass;
     }
@@ -938,27 +938,15 @@ class CakePdf
         $viewClass = $this->viewRender();
         $viewClass = App::className($viewClass, 'View', $viewClass == 'View' ? '' : 'View');
 
-        $viewVars = [
-            'theme',
-            'layoutPath',
-            'templatePath',
-            'template',
-            'layout',
-            'helpers',
-            'viewVars',
-        ];
-        $viewOptions = [];
-        foreach ($viewVars as $var) {
-            $prop = '_' . $var;
-            $viewOptions[$var] = $this->{$prop};
-        }
-
-        $View = new $viewClass(
-            ServerRequestFactory::fromGlobals(),
-            null,
-            null,
-            $viewOptions
-        );
+        $View = new $viewClass(Request::createFromGlobals());
+        $View->viewVars = $this->_viewVars;
+        $View->theme = $this->_theme;
+        $View->layoutPath = $this->_layoutPath;
+        $View->templatePath = $this->_templatePath;
+        $View->view = $this->_template;
+        $View->layout = $this->_layout;
+        $View->helpers = $this->_helpers;
+        $View->loadHelpers();
 
         return $View->render();
     }

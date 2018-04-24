@@ -76,7 +76,7 @@ class WkHtmlToPdfEngine extends AbstractPdfEngine
     {
         $result = ['stdout' => '', 'stderr' => '', 'return' => ''];
 
-        $cwd = $this->getConfig('cwd');
+        $cwd = $this->config('cwd');
 
         $proc = proc_open($cmd, [0 => ['pipe', 'r'], 1 => ['pipe', 'w'], 2 => ['pipe', 'w']], $pipes, $cwd);
         fwrite($pipes[0], $input);
@@ -101,7 +101,7 @@ class WkHtmlToPdfEngine extends AbstractPdfEngine
      */
     protected function _getCommand()
     {
-        $binary = $this->getConfig('binary');
+        $binary = $this->config('binary');
 
         if ($binary) {
             $this->_binary = $binary;
@@ -127,7 +127,7 @@ class WkHtmlToPdfEngine extends AbstractPdfEngine
                 $options['margin-' . $key] = $value . 'mm';
             }
         }
-        $options = array_merge($options, (array)$this->getConfig('options'));
+        $options = array_merge($options, (array)$this->config('options'));
 
         if ($this->_windowsEnvironment) {
             $command = '"' . $this->_binary . '"';
